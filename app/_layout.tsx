@@ -1,21 +1,27 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import "../global.css"
+import 'react-native-reanimated';
+
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
-import 'react-native-reanimated';
+import { View } from 'react-native';
+import { Button } from '@/components/Button/Button';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useColorScheme } from "nativewind";
+import { themes } from "@/lib/theme";
 
-import { useColorScheme } from '@/hooks/useColorScheme';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
+  const { setColorScheme, colorScheme } = useColorScheme()
+
+  setColorScheme("system")
 
   useEffect(() => {
     if (loaded) {
@@ -24,16 +30,16 @@ export default function RootLayout() {
   }, [loaded]);
 
   if (!loaded) {
-    return null;
+    return  null;
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+      <SafeAreaView style={themes[colorScheme ?? 'light']} className="bg-background flex-1">
+        <View className="flex flex-row gap-4 mx-4">
+          <Button text="Default Button" />
+          <Button disabled text="Default Button Disabled"/>
+        </View>
+        <StatusBar style="auto" />
+      </SafeAreaView>
   );
 }
